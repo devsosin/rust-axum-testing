@@ -1,0 +1,9 @@
+도메인 feature 별로 디자인 패턴을 따르는 폴더 구조 생성
+
+article/
+    mod.rs # -> 해당 폴더를 모듈로 사용할 때 적용
+    dto/
+    entity/
+    handler/
+    service/
+    repository/

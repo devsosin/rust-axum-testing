@@ -1,0 +1,32 @@
+[package]
+name = "server"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# 기본 axum 라이브러리
+axum = "0.7"
+tokio = { version = "1.0", features = ["full"] }
+
+# 로깅 라이브러리
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# 환경변수 관리 라이브러리
+dotenv = "0.15"
+
+# DB관리
+sqlx = { version = "0.8", features = ["runtime-tokio-native-tls", "postgres", "chrono"] }
+
+# Serializer, Deserializer
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Custom Error 처리
+anyhow = "1.0"
+
+[dev-dependencies]
+# 모킹 라이브러리
+mockall = "0.13.0"
