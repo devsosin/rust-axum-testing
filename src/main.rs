@@ -15,16 +15,11 @@ pub mod config {
     pub mod database;
 }
 
-pub mod middleware;
+pub mod middleware {}
 
-pub mod domain {
+pub mod domain {}
 
-}
-
-pub mod global {
-
-}
-
+pub mod global {}
 
 #[tokio::main]
 async fn main() {
@@ -43,11 +38,9 @@ async fn main() {
     let pool = config::database::create_connection_pool().await;
     let pool = Arc::new(pool);
 
-    let app = Router::new()
-        .route("/", axum::routing::get(|| async { "{\"status\": \"OK\"}" }));
+    let app = Router::new().route("/", axum::routing::get(|| async { "{\"status\": \"OK\"}" }));
 
-    let app =
-        app.fallback(|| async { (StatusCode::NOT_FOUND, "API NOT FOUND") });
+    let app = app.fallback(|| async { (StatusCode::NOT_FOUND, "API NOT FOUND") });
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     tracing::debug!("listening on {}", listener.local_addr().unwrap());
