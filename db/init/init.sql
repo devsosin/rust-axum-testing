@@ -3,7 +3,7 @@ CREATE TABLE tb_user(
     username VARCHAR(255) NOT NULL UNIQUE,
 
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP,
+    updated_at TIMESTAMP
 );
 
 CREATE TABLE tb_article(
@@ -19,7 +19,7 @@ CREATE TABLE tb_article(
     FOREIGN KEY (writer_id) REFERENCES tb_user(id)
 );
 
-INSERT INTO tb_user(login_type, username, password, email) VALUES
+INSERT INTO tb_user(username) VALUES
     ('test_user'),
     ('test_user2');
 
