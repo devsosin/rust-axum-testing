@@ -5,6 +5,7 @@ use sqlx::PgPool;
 
 mod delete;
 mod get_detail;
+mod get_list;
 mod save;
 mod update;
 

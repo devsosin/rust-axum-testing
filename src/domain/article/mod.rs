@@ -7,6 +7,7 @@ mod handler {
     pub mod create;
     pub mod delete;
     pub mod read_article;
+    pub mod read_articles;
     pub mod update;
 }
 

@@ -7,6 +7,7 @@ use super::repository::ArticleRepository;
 mod create;
 mod delete;
 mod read_article;
+mod read_articles;
 mod update;
 
 // 구조체
