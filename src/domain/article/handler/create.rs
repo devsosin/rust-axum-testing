@@ -1,7 +1,33 @@
-use axum::response::IntoResponse;
+use std::sync::Arc;
 
-pub async fn create_article() -> impl IntoResponse {
-    todo!()
+use axum::{http::StatusCode, response::IntoResponse, Extension, Json};
+use serde_json::json;
+
+use crate::{
+    domain::article::{dto::request::create::ArticleCreateRequest, usecase::ArticleUsecase},
+    global::errors::CustomError,
+};
+
+pub async fn create_article(
+    Extension(usecase): Extension<Arc<dyn ArticleUsecase>>,
+    Extension(user_id): Extension<i64>,
+    Json(create_req): Json<ArticleCreateRequest>,
+) -> impl IntoResponse {
+    // 입력값 검증
+    if create_req.get_title().is_empty() {
+        return CustomError::Invalidate("Article(Title)".to_string()).into_response();
+    } else if create_req.get_content().is_empty() {
+        return CustomError::Invalidate("Article(Content)".to_string()).into_response();
+    }
+
+    match usecase.create_article(user_id, create_req).await {
+        Ok(res) => (
+            StatusCode::CREATED,
+            Json(json!({"message": "성공", "data": res})),
+        )
+            .into_response(),
+        Err(err) => err.into_response(),
+    }
 }
 
 #[cfg(test)]
