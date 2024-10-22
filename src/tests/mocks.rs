@@ -7,7 +7,10 @@ pub mod tests {
 
     use crate::{
         domain::article::{
-            dto::{request::create::ArticleCreateRequest, response::create::ArticleCreateResponse},
+            dto::{
+                request::{create::ArticleCreateRequest, edit::EditArticleRequest},
+                response::{create::ArticleCreateResponse, read_article::ReadArticleResponse},
+            },
             entity::Article,
             repository::ArticleRepository,
             usecase::ArticleUsecase,
@@ -44,6 +47,14 @@ pub mod tests {
                 user_id: i64,
                 create_req: ArticleCreateRequest,
             ) -> Result<ArticleCreateResponse, Arc<CustomError>>;
+            async fn read_article(&self, article_id: i64) -> Result<ReadArticleResponse, Arc<CustomError>>;
+            async fn update_article(
+                &self,
+                user_id: i64,
+                article_id: i64,
+                edit_req: EditArticleRequest,
+            ) -> Result<(), Arc<CustomError>>;
+            async fn delete_article(&self, user_id: i64, article_id: i64) -> Result<(), Arc<CustomError>>;
         }
 
     }

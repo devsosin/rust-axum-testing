@@ -1,3 +1,5 @@
+use super::dto::response::read_article::ReadArticleResponse;
+
 #[derive(Debug, sqlx::FromRow, Clone, PartialEq)]
 pub struct Article {
     id: Option<i64>,
@@ -30,5 +32,14 @@ impl Article {
     }
     pub fn get_writer(&self) -> i64 {
         self.writer_id
+    }
+
+    pub fn to_response(&self) -> ReadArticleResponse {
+        ReadArticleResponse::new(
+            self.id.unwrap(),
+            self.title.to_string(),
+            self.content.to_string(),
+            self.writer_id,
+        )
     }
 }
