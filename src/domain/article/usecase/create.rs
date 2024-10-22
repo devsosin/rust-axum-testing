@@ -13,7 +13,10 @@ pub async fn create_article(
     user_id: i64,
     create_req: ArticleCreateRequest,
 ) -> Result<ArticleCreateResponse, Arc<CustomError>> {
-    todo!()
+    let new_article = create_req.to_entity(user_id);
+    let id = repository.save_article(new_article).await?;
+
+    Ok(ArticleCreateResponse::new(id))
 }
 
 #[cfg(test)]
@@ -24,7 +27,6 @@ mod tests {
 
     use crate::domain::article::dto::request::create::ArticleCreateRequest;
 
-    use crate::domain::article::entity::Article;
     use crate::tests::mocks::tests::MockArticleRepositoryImpl;
 
     use super::create_article;
@@ -42,11 +44,7 @@ mod tests {
         let inserted_id = 1;
         mock_repo
             .expect_save_article()
-            .with(predicate::eq(Article::new(
-                create_req.get_title().to_string(),
-                create_req.get_content().to_string(),
-                user_id,
-            )))
+            .with(predicate::eq(create_req.to_entity(user_id)))
             .returning(move |_| Ok(inserted_id));
 
         // Act

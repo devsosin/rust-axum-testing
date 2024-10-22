@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::domain::article::entity::Article;
+
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct ArticleCreateRequest {
     title: String,
@@ -17,5 +19,9 @@ impl ArticleCreateRequest {
 
     pub fn get_content(&self) -> &str {
         &self.content
+    }
+
+    pub fn to_entity(&self, user_id: i64) -> Article {
+        Article::new(self.title.to_string(), self.content.to_string(), user_id)
     }
 }
