@@ -10,7 +10,30 @@ struct InsertResult {
 }
 
 pub async fn save_article(pool: &PgPool, article: Article) -> Result<i64, Arc<CustomError>> {
-    todo!()
+    let row = sqlx::query_as::<_, InsertResult>(
+        r#"INSERT INTO tb_article (title, content, writer_id)
+        VALUES ($1, $2, $3)
+        RETURNING id;
+        "#,
+    )
+    .bind(article.get_title())
+    .bind(article.get_content())
+    .bind(article.get_writer())
+    .fetch_one(pool)
+    .await
+    .map_err(|e| {
+        let err_msg = format!("Error(SaveArticle): {:?}", &e);
+        tracing::error!("{}", err_msg);
+
+        let err = match e {
+            sqlx::Error::Database(_) => CustomError::DatabaseError(e),
+            _ => CustomError::Unexpected(e.into()),
+        };
+
+        Arc::new(err)
+    })?;
+
+    Ok(row.id)
 }
 
 #[cfg(test)]
