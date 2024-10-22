@@ -10,6 +10,9 @@ use dotenv::dotenv;
 // Logging
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+// Domain Routers
+use domain::article::route::get_router as article_router;
+
 // User Defined Modules
 pub mod config {
     pub mod database;
@@ -17,7 +20,9 @@ pub mod config {
 
 pub mod middleware {}
 
-pub mod domain {}
+pub mod domain {
+    pub mod article;
+}
 
 pub mod global {
     pub mod errors;
@@ -40,7 +45,11 @@ async fn main() {
     let pool = config::database::create_connection_pool().await;
     let pool = Arc::new(pool);
 
-    let app = Router::new().route("/", axum::routing::get(|| async { "{\"status\": \"OK\"}" }));
+    let article_router = article_router(&pool);
+
+    let app = Router::new()
+        .route("/", axum::routing::get(|| async { "{\"status\": \"OK\"}" }))
+        .nest("/api/v1/article", article_router);
 
     let app = app.fallback(|| async { (StatusCode::NOT_FOUND, "API NOT FOUND") });
 
