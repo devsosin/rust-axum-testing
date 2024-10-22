@@ -19,7 +19,9 @@ pub mod middleware {}
 
 pub mod domain {}
 
-pub mod global {}
+pub mod global {
+    pub mod errors;
+}
 
 #[tokio::main]
 async fn main() {
