@@ -21,6 +21,16 @@ pub mod tests {
         #[async_trait]
         impl ArticleRepository for ArticleRepositoryImpl {
             async fn save_article(&self, article: Article) -> Result<i64, Arc<CustomError>>;
+            async fn get_list(&self) -> Result<Vec<Article>, Arc<CustomError>>;
+            async fn get_detail(&self, article_id: i64) -> Result<Article, Arc<CustomError>>;
+            async fn delete_article(&self, user_id: i64, article_id: i64) -> Result<(), Arc<CustomError>>;
+            async fn update_article(
+                &self,
+                user_id: i64,
+                article_id: i64,
+                title: Option<String>,
+                content: Option<String>,
+            ) -> Result<(), Arc<CustomError>>;
         }
     }
 
