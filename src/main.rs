@@ -28,6 +28,11 @@ pub mod global {
     pub mod errors;
 }
 
+#[cfg(test)]
+pub mod tests {
+    pub mod mocks;
+}
+
 #[tokio::main]
 async fn main() {
     // 환경변수 로드
