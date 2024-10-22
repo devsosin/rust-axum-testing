@@ -6,7 +6,12 @@ pub mod tests {
     use mockall::mock;
 
     use crate::{
-        domain::article::{entity::Article, repository::ArticleRepository},
+        domain::article::{
+            dto::{request::create::ArticleCreateRequest, response::create::ArticleCreateResponse},
+            entity::Article,
+            repository::ArticleRepository,
+            usecase::ArticleUsecase,
+        },
         global::errors::CustomError,
     };
 
@@ -17,5 +22,19 @@ pub mod tests {
         impl ArticleRepository for ArticleRepositoryImpl {
             async fn save_article(&self, article: Article) -> Result<i64, Arc<CustomError>>;
         }
+    }
+
+    mock! {
+        pub ArticleUsecaseImpl {}
+
+        #[async_trait]
+        impl ArticleUsecase for ArticleUsecaseImpl {
+            async fn create_article(
+                &self,
+                user_id: i64,
+                create_req: ArticleCreateRequest,
+            ) -> Result<ArticleCreateResponse, Arc<CustomError>>;
+        }
+
     }
 }
