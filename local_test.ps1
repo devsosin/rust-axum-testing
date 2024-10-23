@@ -1,8 +1,8 @@
-$ErrorActionPreference = "Stop"
-
-param(
+param (
     [string]$TARGET
 )
+
+$ErrorActionPreference = "Stop"
 
 # 변수 설정
 $DOCKER_COMPOSE_FILE = "docker-compose-test.yml"
@@ -16,7 +16,7 @@ $SLEEP_INTERVAL = 3
 function Check-Health {
     $container_id = docker compose -f $DOCKER_COMPOSE_FILE ps -q $SERVICE_NAME
     $status = docker inspect --format='{{.State.Health.Status}}' $container_id
-    Write-Host "Current health status of $SERVICE_NAME: $status"
+    Write-Host "Current health status of $SERVICE_NAME : $status"
 
     if ($status -eq "healthy") {
         return $true
