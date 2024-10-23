@@ -1,9 +1,9 @@
 version: "3"
 
-name: "server"
+name: "tester"
 
 services:
-  db:
+  test-db:
     image: postgres:latest
     environment:
       - POSTGRES_USER=test
