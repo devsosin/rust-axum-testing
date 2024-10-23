@@ -54,10 +54,43 @@ Write-Host "#### 테스트 실행 ####"
 $env:DATABASE_URL = "postgres://test:test1234@localhost:5432/test_db"
 
 Write-Host "Running tests for domain::$TARGET..."
-cargo test -- --test-threads=1 "domain::$TARGET"
+# cargo test -- --test-threads=1 "domain::$TARGET"
+
+# Run cargo test and capture the output
+$TestOutput = & cargo test -- --test-threads=1 domain::$TARGET 2>&1
+
+# Extract the summary line that contains the test results
+$SummaryLine = $TestOutput | Select-String '^test result:' | ForEach-Object { $_.Line }
+
+# Use regex to extract the numbers of passed and failed tests
+$Passed = if ($SummaryLine -match '(\d+)\s+passed;') { $Matches[1] } else { 0 }
+$Failed = if ($SummaryLine -match '(\d+)\s+failed;') { $Matches[1] } else { 0 }
+$Ignored = if ($SummaryLine -match '(\d+)\s+ignored;') { $Matches[1] } else { 0 }
+$Measured = if ($SummaryLine -match '(\d+)\s+measured;') { $Matches[1] } else { 0 }
+$FilteredOut = if ($SummaryLine -match '(\d+)\s+filtered out;') { $Matches[1] } else { 0 }
+
+# Convert counts to integers
+$Passed = [int]$Passed
+$Failed = [int]$Failed
+$Ignored = [int]$Ignored
+$Measured = [int]$Measured
+$FilteredOut = [int]$FilteredOut
+
+# Calculate the total number of tests run (passed + failed)
+$Total = $Passed + $Failed
 
 Write-Host "#### 테스트 완료, 테스트 환경 정리 ####"
 
-docker compose -f $DOCKER_COMPOSE_FILE down
+# Run docker compose down
+docker compose -f "$DOCKER_COMPOSE_FILE" down
 
-Write-Host "#### 테스트 종료 ####"
+# Calculate the coverage percentage
+if ($Total -ne 0) {
+    $Coverage = [math]::Round(($Passed * 100.0) / $Total, 2)
+} else {
+    $Coverage = 0
+}
+
+Write-Host ""
+Write-Host "Test Coverage: $Coverage% ($Passed out of $Total tests passed)"
+Write-Host "#### 테스트 종료 #### "

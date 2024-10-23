@@ -53,10 +53,47 @@ export DATABASE_URL=postgres://test:test1234@localhost:5432/test_db
 # echo $DATABASE_URL
 
 echo "Running tests for domain::$TARGET..."
-cargo test -- --test-threads=1 domain::$TARGET 
+# cargo test -- --test-threads=1 domain::$TARGET 
+
+# Run cargo test and capture the output
+TEST_OUTPUT=$(cargo test -- --test-threads=1 domain::$TARGET 2>&1)
+
+# echo "$TEST_OUTPUT"
+
+# Extract the summary line that contains the test results
+SUMMARY_LINE=$(echo "$TEST_OUTPUT" | grep "^test result:")
+
+# echo "$SUMMARY_LINE"
+
+# Use grep and awk to extract the numbers of passed and failed tests
+PASSED=$(echo "$SUMMARY_LINE" | awk '{for(i=1;i<=NF;i++){if($i=="passed;"){print $(i-1)}}}')
+FAILED=$(echo "$SUMMARY_LINE" | awk '{for(i=1;i<=NF;i++){if($i=="failed;"){print $(i-1)}}}')
+IGNORED=$(echo "$SUMMARY_LINE" | awk '{for(i=1;i<=NF;i++){if($i=="ignored;"){print $(i-1)}}}')
+MEASURED=$(echo "$SUMMARY_LINE" | awk '{for(i=1;i<=NF;i++){if($i=="measured;"){print $(i-1)}}}')
+FILTERED_OUT=$(echo "$SUMMARY_LINE" | awk '{for(i=1;i<=NF;i++){if($i=="out;"){print $(i-2)}}}')
+
+# Set default values if any of the counts are missing
+PASSED=${PASSED:-0}
+FAILED=${FAILED:-0}
+IGNORED=${IGNORED:-0}
+MEASURED=${MEASURED:-0}
+FILTERED_OUT=${FILTERED_OUT:-0}
+
+# Calculate the total number of tests run (passed + failed)
+TOTAL=$((PASSED + FAILED))
 
 echo "#### 테스트 완료, 테스트 환경 정리 ####"
 
 docker compose -f "$DOCKER_COMPOSE_FILE" down
+
+# Calculate the coverage percentage
+if [ "$TOTAL" -ne 0 ]; then
+  COVERAGE=$(echo "scale=2; $PASSED * 100 / $TOTAL" | bc)
+else
+  COVERAGE=0
+fi
+
+echo
+echo "Test Coverage: $COVERAGE% ($PASSED out of $TOTAL tests passed)"
 
 echo "#### 테스트 종료 #### "
